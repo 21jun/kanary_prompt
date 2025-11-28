@@ -1,0 +1,32 @@
+
+# Kanary Prompt
+
+Lightweight package that registers the Kanary prompt formatter for NeMo/Canary2 pipelines.
+
+## Install from Git
+
+```
+pip install git+https://github.com/<your-org>/kanary_prompt.git
+```
+
+Replace `<your-org>` with your GitHub namespace after pushing this repo.
+
+## Local development install
+
+```
+pip install -e .
+```
+
+## Usage
+
+```
+from kanary_prompt import KanaryPromptFormatter, kanary
+```
+
+The formatter plugs into NeMo's prompt registry so you can reference `"kanary"` anywhere NeMo expects a prompt format name. Dependencies (`torch`, `lhotse`, `nemo_toolkit`) should already be present in your environment; install any GPU-specific variants per the PyTorch/NeMo docs.
+
+## Build a wheel (optional)
+
+```
+python -m build
+```

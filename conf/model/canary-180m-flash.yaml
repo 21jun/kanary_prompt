@@ -1,0 +1,390 @@
+sample_rate: 16000
+label_smoothing: 0.0
+log_prediction: true
+prompt_format: canary2
+prompt_defaults:
+- role: user
+  slots:
+    decodercontext: ''
+    source_lang: <|en|>
+    target_lang: <|en|>
+    emotion: <|emo:undefined|>
+    pnc: <|pnc|>
+    itn: <|noitn|>
+    diarize: <|nodiarize|>
+    timestamp: <|notimestamp|>
+- role: user_partial
+  slots:
+    decodercontext: ''
+use_loss_mask_for_prompt: true
+model_defaults:
+  asr_enc_hidden: 512
+  lm_enc_hidden: 1024
+  lm_dec_hidden: 1024
+train_ds:
+  use_lhotse: true
+  input_cfg: null
+  tarred_audio_filepaths: null
+  manifest_filepath: null
+  sample_rate: 16000
+  shuffle: true
+  num_workers: 8
+  pin_memory: true
+  prompt_format: canary2
+  max_tps: 25
+  max_duration: 40.0
+  text_field: answer
+  lang_field: target_lang
+  use_bucketing: true
+  bucket_duration_bins:
+  - - 3.56
+    - 30
+  - - 3.56
+    - 77
+  - - 4.608
+    - 38
+  - - 4.608
+    - 88
+  - - 5.48
+    - 49
+  - - 5.48
+    - 106
+  - - 6.05
+    - 52
+  - - 6.05
+    - 109
+  - - 6.85
+    - 54
+  - - 6.85
+    - 124
+  - - 7.914
+    - 59
+  - - 7.914
+    - 137
+  - - 8.52
+    - 67
+  - - 8.52
+    - 158
+  - - 9.51
+    - 67
+  - - 9.51
+    - 153
+  - - 10.29
+    - 78
+  - - 10.29
+    - 202
+  - - 10.89
+    - 88
+  - - 10.89
+    - 197
+  - - 11.45
+    - 92
+  - - 11.45
+    - 217
+  - - 12.1
+    - 98
+  - - 12.1
+    - 222
+  - - 12.69
+    - 123
+  - - 12.69
+    - 257
+  - - 13.09
+    - 133
+  - - 13.09
+    - 245
+  - - 13.57
+    - 104
+  - - 13.57
+    - 225
+  - - 14.02
+    - 108
+  - - 14.02
+    - 238
+  - - 14.53
+    - 117
+  - - 14.53
+    - 235
+  - - 15.08
+    - 135
+  - - 15.08
+    - 253
+  - - 15.53
+    - 130
+  - - 15.53
+    - 273
+  - - 15.945
+    - 123
+  - - 15.945
+    - 270
+  - - 16.4
+    - 126
+  - - 16.4
+    - 284
+  - - 16.9
+    - 126
+  - - 16.9
+    - 294
+  - - 17.44
+    - 127
+  - - 17.44
+    - 296
+  - - 17.96
+    - 131
+  - - 17.96
+    - 290
+  - - 18.41
+    - 133
+  - - 18.41
+    - 308
+  - - 18.91
+    - 137
+  - - 18.91
+    - 320
+  - - 19.42
+    - 135
+  - - 19.42
+    - 313
+  - - 20.0
+    - 138
+  - - 20.0
+    - 311
+  - - 34.547
+    - 195
+  - - 34.547
+    - 434
+  - - 40.0
+    - 263
+  - - 40.0
+    - 381
+  bucket_batch_size:
+  - 1044
+  - 835
+  - 786
+  - 662
+  - 662
+  - 558
+  - 594
+  - 501
+  - 534
+  - 450
+  - 465
+  - 391
+  - 417
+  - 342
+  - 378
+  - 318
+  - 340
+  - 271
+  - 322
+  - 258
+  - 295
+  - 248
+  - 284
+  - 234
+  - 250
+  - 210
+  - 250
+  - 210
+  - 250
+  - 210
+  - 241
+  - 203
+  - 232
+  - 196
+  - 216
+  - 187
+  - 207
+  - 174
+  - 207
+  - 174
+  - 199
+  - 163
+  - 194
+  - 163
+  - 188
+  - 158
+  - 186
+  - 156
+  - 172
+  - 145
+  - 173
+  - 142
+  - 167
+  - 140
+  - 160
+  - 135
+  - 86
+  - 74
+  - 70
+  - 64
+  bucket_buffer_size: 40000
+  shuffle_buffer_size: 10000
+  concurrent_bucketing: false
+  augmentor: null
+validation_ds:
+  use_lhotse: true
+  prompt_format: canary2
+  manifest_filepath: /data/ASR/librispeech/test_other.json
+  sample_rate: 16000
+  batch_size: 32
+  shuffle: false
+  num_workers: 2
+  pin_memory: true
+  text_field: answer
+  lang_field: target_lang
+  tarred_audio_filepaths: null
+tokenizer:
+  dir: null
+  type: agg
+  langs:
+    spl_tokens:
+      dir: null
+      type: bpe
+      model_path: nemo:ff667b65cf42410a9569af29120b4ca0_tokenizer.model
+      vocab_path: nemo:195ce877b89445a6b5f283937e8f6201_vocab.txt
+      spe_tokenizer_vocab: nemo:b5fec7e6dee64f02bf72603bd590f80e_tokenizer.vocab
+    en:
+      dir: null
+      type: bpe
+      model_path: nemo:364e5e7115ea4beab1121f5d07fe6235_tokenizer.model
+      vocab_path: nemo:0f7e65acb90e424d8c84d223eb95ea46_vocab.txt
+      spe_tokenizer_vocab: nemo:668ffbe7ea074407924cbd768b2b7325_tokenizer.vocab
+    de:
+      dir: null
+      type: bpe
+      model_path: nemo:009b043b0f9844289f792bba09ae041e_tokenizer.model
+      vocab_path: nemo:af39f312b3974c1a9071b5a5a70d2be5_vocab.txt
+      spe_tokenizer_vocab: nemo:09dfa2da34224984a0d7d4834ee49381_tokenizer.vocab
+    es:
+      dir: null
+      type: bpe
+      model_path: nemo:f6f6500404df4db28be4cd299a1fbd3e_tokenizer.model
+      vocab_path: nemo:4ca9ee65cb62485ca6dbe97de8aedacf_vocab.txt
+      spe_tokenizer_vocab: nemo:93a7035cc0b740808a05a0a132f67a5e_tokenizer.vocab
+    fr:
+      dir: null
+      type: bpe
+      model_path: nemo:01ada6f587194060be30d37cba518438_tokenizer.model
+      vocab_path: nemo:681e5f62d2b24725b7fb9c94d346e93f_vocab.txt
+      spe_tokenizer_vocab: nemo:f8078df0ddcd4089a2e375388e9e4960_tokenizer.vocab
+  custom_tokenizer:
+    _target_: nemo.collections.common.tokenizers.canary_tokenizer.CanaryTokenizer
+    tokenizers: null
+preprocessor:
+  _target_: nemo.collections.asr.modules.AudioToMelSpectrogramPreprocessor
+  sample_rate: 16000
+  normalize: per_feature
+  window_size: 0.025
+  window_stride: 0.01
+  window: hann
+  features: 128
+  n_fft: 512
+  log: true
+  frame_splicing: 1
+  dither: 1.0e-05
+  pad_to: 0
+  pad_value: 0.0
+spec_augment:
+  _target_: nemo.collections.asr.modules.SpectrogramAugmentation
+  freq_masks: 2
+  time_masks: 10
+  freq_width: 27
+  time_width: 0.05
+encoder:
+  _target_: nemo.collections.asr.modules.ConformerEncoder
+  feat_in: 128
+  feat_out: -1
+  n_layers: 17
+  d_model: 512
+  subsampling: dw_striding
+  subsampling_factor: 8
+  subsampling_conv_channels: 256
+  causal_downsampling: false
+  reduction: null
+  reduction_position: null
+  reduction_factor: 1
+  ff_expansion_factor: 4
+  self_attention_model: rel_pos
+  n_heads: 8
+  att_context_size:
+  - -1
+  - -1
+  xscaling: false
+  untie_biases: true
+  pos_emb_max_len: 5000
+  conv_kernel_size: 9
+  conv_norm_type: batch_norm
+  conv_context_size: null
+  dropout: 0.1
+  dropout_pre_encoder: 0.1
+  dropout_emb: 0.0
+  dropout_att: 0.1
+transf_encoder:
+  _target_: nemo.collections.asr.modules.transformer.transformer_encoders.TransformerEncoder
+  num_layers: 0
+  hidden_size: 1024
+  inner_size: 4096
+  num_attention_heads: 8
+  ffn_dropout: 0.1
+  attn_score_dropout: 0.1
+  attn_layer_dropout: 0.1
+  mask_future: false
+  pre_ln: true
+  pre_ln_final_layer_norm: true
+transf_decoder:
+  _target_: nemo.collections.asr.modules.transformer.get_nemo_transformer
+  model_name: null
+  pretrained: false
+  encoder: null
+  pre_ln_final_layer_norm: true
+  config_dict:
+    max_sequence_length: 1024
+    num_token_types: 0
+    embedding_dropout: 0.1
+    learn_positional_encodings: false
+    hidden_size: 1024
+    inner_size: 4096
+    num_layers: 4
+    num_attention_heads: 8
+    ffn_dropout: 0.1
+    attn_score_dropout: 0.1
+    attn_layer_dropout: 0.1
+    hidden_act: relu
+    pre_ln: true
+    vocab_size: None
+head:
+  _target_: nemo.collections.asr.parts.submodules.token_classifier.TokenClassifier
+  num_layers: 1
+  activation: relu
+  log_softmax: true
+  hidden_size: 1024
+  num_classes: 5248
+  dropout: 0.0
+  use_transformer_init: true
+decoding:
+  strategy: beam
+  return_best_hypothesis: true
+  beam:
+    beam_size: 1
+    len_pen: 0.0
+    max_generation_delta: 50
+loss:
+  _target_: nemo.collections.common.losses.smoothed_cross_entropy.SmoothedCrossEntropyLoss
+  label_smoothing: 0.0
+  pad_id: 2
+optim:
+  name: adamw
+  lr: 5.0e-05
+  betas:
+  - 0.9
+  - 0.98
+  weight_decay: 0.001
+  sched:
+    name: CosineAnnealing
+    max_steps: 75000
+    warmup_steps: 2500
+    warmup_ratio: null
+    min_lr: 1.0e-06
+target: nemo.collections.asr.models.aed_multitask_models.EncDecMultiTaskModel
+nemo_version: 2.3.0rc0

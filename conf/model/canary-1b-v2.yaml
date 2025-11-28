@@ -1,0 +1,183 @@
+sample_rate: 16000
+label_smoothing: 0.0
+context_len_for_AR_decoding: 5
+log_prediction: true
+prompt_format: canary2
+prompt_defaults:
+- role: user
+  slots:
+    decodercontext: ''
+    source_lang: <|en|>
+    target_lang: <|en|>
+    emotion: <|emo:undefined|>
+    pnc: <|pnc|>
+    itn: <|noitn|>
+    diarize: <|nodiarize|>
+    timestamp: <|notimestamp|>
+- role: user_partial
+  slots:
+    decodercontext: ''
+model_defaults:
+  asr_enc_hidden: 1024
+  lm_enc_hidden: 1024
+  lm_dec_hidden: 1024
+train_ds:
+  use_lhotse: true
+  skip_missing_manifest_entries: true
+  input_cfg: null
+  tarred_audio_filepaths: null
+  manifest_filepath: null
+  sample_rate: 16000
+  shuffle: true
+  num_workers: 4
+  pin_memory: true
+  prompt_format: canary2
+  max_duration: 40.0
+  min_duration: 0.01
+  text_field: answer
+  lang_field: target_lang
+  use_bucketing: true
+  max_tps: null
+  bucket_duration_bins: null
+  bucket_batch_size: null
+  num_buckets: null
+  bucket_buffer_size: 20000
+  shuffle_buffer_size: 10000
+validation_ds:
+  use_lhotse: true
+  prompt_format: canary2
+  manifest_filepath: null
+  sample_rate: 16000
+  batch_size: 4
+  shuffle: true
+  max_duration: 40.0
+  min_duration: 0.1
+  num_workers: 2
+  pin_memory: true
+  text_field: answer
+  lang_field: target_lang
+tokenizer:
+  dir: null
+  type: bpe
+  custom_tokenizer:
+    _target_: nemo.collections.common.tokenizers.canary_tokenizer.CanaryBPETokenizer
+  model_path: nemo:cc5d48e83aad4be48aa9fa264b727c4b_tokenizer.model
+  vocab_path: nemo:e2cdb5b05c3e44f09554a59a3b1e3ad2_vocab.txt
+  spe_tokenizer_vocab: nemo:801fe64cd0ff4903a06b74cd771645c0_tokenizer.vocab
+preprocessor:
+  _target_: nemo.collections.asr.modules.AudioToMelSpectrogramPreprocessor
+  sample_rate: 16000
+  normalize: per_feature
+  window_size: 0.025
+  window_stride: 0.01
+  window: hann
+  features: 128
+  n_fft: 512
+  log: true
+  frame_splicing: 1
+  dither: 1.0e-05
+  pad_to: 0
+  pad_value: 0.0
+spec_augment:
+  _target_: nemo.collections.asr.modules.SpectrogramAugmentation
+  freq_masks: 2
+  time_masks: 10
+  freq_width: 27
+  time_width: 0.05
+encoder:
+  _target_: nemo.collections.asr.modules.ConformerEncoder
+  feat_in: 128
+  feat_out: -1
+  n_layers: 32
+  d_model: 1024
+  subsampling: dw_striding
+  subsampling_factor: 8
+  subsampling_conv_channels: 256
+  causal_downsampling: false
+  reduction: null
+  reduction_position: null
+  reduction_factor: 1
+  ff_expansion_factor: 4
+  self_attention_model: rel_pos
+  n_heads: 8
+  att_context_size:
+  - -1
+  - -1
+  xscaling: false
+  untie_biases: true
+  pos_emb_max_len: 5000
+  conv_kernel_size: 9
+  conv_norm_type: batch_norm
+  conv_context_size: null
+  dropout: 0.1
+  dropout_pre_encoder: 0.1
+  dropout_emb: 0.0
+  dropout_att: 0.1
+transf_encoder:
+  _target_: nemo.collections.asr.modules.transformer.transformer_encoders.TransformerEncoder
+  num_layers: 0
+  hidden_size: 1024
+  inner_size: 4096
+  num_attention_heads: 8
+  ffn_dropout: 0.1
+  attn_score_dropout: 0.1
+  attn_layer_dropout: 0.1
+  mask_future: false
+  pre_ln: true
+  pre_ln_final_layer_norm: true
+transf_decoder:
+  _target_: nemo.collections.asr.modules.transformer.get_nemo_transformer
+  model_name: null
+  pretrained: false
+  encoder: null
+  pre_ln_final_layer_norm: true
+  config_dict:
+    max_sequence_length: 1024
+    num_token_types: 0
+    embedding_dropout: 0.1
+    learn_positional_encodings: false
+    hidden_size: 1024
+    inner_size: 4096
+    num_layers: 8
+    num_attention_heads: 8
+    ffn_dropout: 0.1
+    attn_score_dropout: 0.1
+    attn_layer_dropout: 0.1
+    hidden_act: relu
+    pre_ln: true
+    vocab_size: None
+head:
+  _target_: nemo.collections.asr.parts.submodules.token_classifier.TokenClassifier
+  num_layers: 1
+  activation: relu
+  log_softmax: true
+  hidden_size: 1024
+  num_classes: 16384
+  dropout: 0.0
+  use_transformer_init: true
+decoding:
+  strategy: beam
+  return_best_hypothesis: true
+  beam:
+    beam_size: 1
+    len_pen: 0.0
+    max_generation_delta: 50
+loss:
+  _target_: nemo.collections.common.losses.smoothed_cross_entropy.SmoothedCrossEntropyLoss
+  label_smoothing: 0.0
+  pad_id: 2
+optim:
+  name: adamw
+  lr: 5.0e-05
+  betas:
+  - 0.9
+  - 0.98
+  weight_decay: 0.001
+  sched:
+    name: InverseSquareRootAnnealing
+    max_steps: 10000
+    warmup_steps: 0
+    warmup_ratio: null
+    min_lr: 1.0e-06
+target: nemo.collections.asr.models.aed_multitask_models.EncDecMultiTaskModel
+nemo_version: 2.3.0rc5

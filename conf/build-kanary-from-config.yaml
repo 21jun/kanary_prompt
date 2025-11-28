@@ -1,0 +1,56 @@
+base_model: canary-1b-flash
+
+defaults:
+  - model: canary-1b-flash
+  - _self_
+
+
+
+init_from_pretrained_model:
+  model0:
+    name: "nvidia/${base_model}"
+    exclude: ["transf_decoder._embedding.token_embedding", "log_softmax.mlp.layer0"]
+
+model:
+  # New parameters for Kanary
+  prompt_format: kanary
+  prompt_defaults:
+  - role: user
+    slots:
+      decodercontext: ''
+      source_lang: <|ko|>
+      target_lang: <|ko|>
+      emotion: <|emo:undefined|>
+      pnc: <|pnc|>
+      itn: <|noitn|>
+      diarize: <|nodiarize|>
+      timestamp: <|notimestamp|>
+      foreign: <|foreign_undefined|>
+  - role: user_partial
+    slots:
+      decodercontext: ''
+
+  tokenizer: ${kanary_tokenizer}
+
+
+kanary_tokenizer:
+  dir: null
+  type: agg
+  langs:
+    spl_tokens:
+      dir: null
+      type: bpe
+      model_path: tokenizers/spl_tokens/tokenizer.model
+      vocab_path: tokenizers/spl_tokens/vocab.txt
+      spe_tokenizer_vocab: tokenizers/spl_tokens/tokenizer.vocab
+    ko:
+      dir: null
+      type: bpe
+      model_path: tokenizers/tokenizer_ko/tokenizer_spe_bpe_v5000_max_4/tokenizer.model
+      vocab_path: tokenizers/tokenizer_ko/tokenizer_spe_bpe_v5000_max_4/vocab.txt
+      spe_tokenizer_vocab: tokenizers/tokenizer_ko/tokenizer_spe_bpe_v5000_max_4/tokenizer.vocab
+  custom_tokenizer:
+    _target_: nemo.collections.common.tokenizers.canary_tokenizer.CanaryTokenizer
+    tokenizers: null
+
+
