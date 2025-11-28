@@ -13,13 +13,13 @@ authors = [{name = "Kanary Project"}]
 dependencies = [
     "torch",
     "lhotse",
-    "nemo_toolkit",
+    "nemo_toolkit[asr]",
     "lightning",
 ]
 
 [project.urls]
-Homepage = "https://github.com/<your-org>/kanary_prompt"
-Repository = "https://github.com/<your-org>/kanary_prompt"
+Homepage = "https://github.com/21jun/kanary_prompt"
+Repository = "https://github.com/21jun/kanary_prompt"
 
 [tool.setuptools.packages.find]
 include = ["kanary_prompt"]
