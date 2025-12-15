@@ -1,15 +1,14 @@
 
 # Kanary Prompt
 
-Lightweight package that registers the Kanary prompt formatter for NeMo/Canary2 pipelines.
+Lightweight package that registers the `Kanary` prompt formatter for NeMo/Canary2 pipelines.
 
 ## Install from Git
 
 ```
-pip install git+https://github.com/<your-org>/kanary_prompt.git
+pip install git+https://github.com/21jun/kanary_prompt.git
 ```
 
-Replace `<your-org>` with your GitHub namespace after pushing this repo.
 
 ## Local development install
 
