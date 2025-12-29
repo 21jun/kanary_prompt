@@ -38,6 +38,7 @@ def main(output_dir: str) -> None:
             "<|startofcontext|>",
             "<|itn|>",
             "<|noitn|>",
+            "<|itn:undefined|>",
             "<|timestamp|>",
             "<|notimestamp|>",
             "<|diarize|>",
@@ -49,9 +50,9 @@ def main(output_dir: str) -> None:
             "<|emo:happy|>",
             "<|emo:sad|>",
             "<|emo:angry|>",
-            "<|foreign_undefined|>", # New
-            "<|foreign_ko|>", # New
-            "<|foreign_en|>", # New
+            "<|foreign:undefined|>",  # New
+            "<|foreign:ko|>",  # New
+            "<|foreign:en|>",  # New
         ]
         # Language special tokens
         + [

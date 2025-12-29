@@ -25,11 +25,28 @@ from nemo.collections.common.tokenizers.canary_tokenizer import (
 
 ITN_TRUE = BOOL_TRUE | {"itn", "<|itn|>"}
 ITN_FALSE = BOOL_FALSE | {"noitn", "<|noitn|>"}
+ITN_DEFAULT = {"default", "undefined", "itn:undefined", "<|itn:undefined|>", "<itn:undefined|>"}
+ITN_SPECIAL_TOKENS = {"<|itn|>", "<|noitn|>", "<|itn:undefined|>"}
+ITN_ALL = ITN_TRUE | ITN_FALSE | ITN_DEFAULT | ITN_SPECIAL_TOKENS
+ITN_TRUE_NORMALIZED = {str(v).lower() for v in ITN_TRUE}
+ITN_FALSE_NORMALIZED = {str(v).lower() for v in ITN_FALSE}
+ITN_DEFAULT_NORMALIZED = {str(v).lower() for v in ITN_DEFAULT}
 TIMESTAMP_TRUE = BOOL_TRUE | {"timestamp", "<|timestamp|>"}
 TIMESTAMP_FALSE = BOOL_FALSE | {"notimestamp", "<|notimestamp|>"}
 DIARIZE_TRUE = BOOL_TRUE | {"diarize", "<|diarize|>"}
 DIARIZE_FALSE = BOOL_FALSE | {"nodiarize", "<|nodiarize|>"}
-FOREIGN_TOKENS = ("<|foreign_ko|>", "<|foreign_en|>", "<|foreign_undefined|>")
+FOREIGN_TOKENS = ("<|foreign:ko|>", "<|foreign:en|>", "<|foreign:undefined|>")
+FOREIGN_KO_NORMALIZED = {"ko", "kor", "korean", "foreign:ko", "foreign_ko", "<|foreign_ko|>", "<|foreign:ko|>"}
+FOREIGN_EN_NORMALIZED = {"en", "eng", "english", "foreign:en", "foreign_en", "<|foreign_en|>", "<|foreign:en|>"}
+FOREIGN_UNDEFINED_NORMALIZED = {
+    "undefined",
+    "unknown",
+    "auto",
+    "foreign:undefined",
+    "foreign_undefined",
+    "<|foreign_undefined|>",
+    "<|foreign:undefined|>",
+}
 
 
 class KanaryPromptFormatter(PromptFormatter):
@@ -51,7 +68,7 @@ class KanaryPromptFormatter(PromptFormatter):
                 "source_lang": Modality.Text,
                 "target_lang": Modality.Text,
                 "pnc": Modality.TextLiteral(*(PNC_TRUE | PNC_FALSE)),
-                "itn": Modality.TextLiteral(*(ITN_TRUE | ITN_FALSE)),
+                "itn": Modality.TextLiteral(*ITN_ALL),
                 "timestamp": Modality.TextLiteral(*(TIMESTAMP_TRUE | TIMESTAMP_FALSE)),
                 "diarize": Modality.TextLiteral(*(DIARIZE_TRUE | DIARIZE_FALSE)),
                 "foreign": Modality.TextLiteral(*FOREIGN_TOKENS),
@@ -87,24 +104,56 @@ class KanaryPromptFormatter(PromptFormatter):
 
 
 def map_manifest_values_to_special_tokens(slot_values: dict[str, str]) -> dict[str, str]:
+    slot_values = slot_values.copy()
+
+    itn_value = slot_values.pop("itn", None)
+    foreign_value = slot_values.pop("foreign", None)
     slot_values = nemo_map_manifest_values_to_special_tokens(slot_values)
-    if "foreign" in slot_values:
-        slot_values["foreign"] = _normalize_foreign_slot(slot_values["foreign"])
+
+    needs_prompt_language = False
+    prompt_language_missing = PromptFormatter.PROMPT_LANGUAGE_SLOT not in slot_values
+
+    if itn_value is not None:
+        slot_values["itn"] = _normalize_itn_slot(itn_value)
+        needs_prompt_language |= slot_values["itn"] in ITN_SPECIAL_TOKENS
+
+    if foreign_value is not None:
+        slot_values["foreign"] = _normalize_foreign_slot(foreign_value)
+        needs_prompt_language |= slot_values["foreign"] in FOREIGN_TOKENS
+
+    if needs_prompt_language and prompt_language_missing:
+        slot_values[PromptFormatter.PROMPT_LANGUAGE_SLOT] = CANARY_SPECIAL_TOKENIZER
     return slot_values
 
 
 def _normalize_foreign_slot(value: str) -> str:
     if value in FOREIGN_TOKENS:
         return value
-    normalized = value.strip().lower()
-    if normalized in {"ko", "kor", "korean", "foreign_ko"}:
-        return "<|foreign_ko|>"
-    if normalized in {"en", "eng", "english", "foreign_en"}:
-        return "<|foreign_en|>"
-    if normalized in {"undefined", "unknown", "auto", "foreign_undefined"}:
-        return "<|foreign_undefined|>"
+
+    normalized = str(value).strip().lower()
+    if normalized in FOREIGN_KO_NORMALIZED:
+        return "<|foreign:ko|>"
+    if normalized in FOREIGN_EN_NORMALIZED:
+        return "<|foreign:en|>"
+    if normalized in FOREIGN_UNDEFINED_NORMALIZED:
+        return "<|foreign:undefined|>"
+    raise ValueError(f"Unsupported foreign slot value '{value}'. Expected one of {FOREIGN_TOKENS} or their short forms.")
+
+
+def _normalize_itn_slot(value: str) -> str:
+    if value in ITN_SPECIAL_TOKENS:
+        return value
+
+    normalized = str(value).strip()
+    normalized_lower = normalized.lower()
+    if normalized_lower in ITN_TRUE_NORMALIZED:
+        return "<|itn|>"
+    if normalized_lower in ITN_FALSE_NORMALIZED:
+        return "<|noitn|>"
+    if normalized_lower in ITN_DEFAULT_NORMALIZED:
+        return "<|itn:undefined|>"
     raise ValueError(
-        f"Unsupported foreign slot value '{value}'. Expected one of {FOREIGN_TOKENS} or their short forms."
+        f"Unsupported itn slot value '{value}'. Expected one of {ITN_SPECIAL_TOKENS} or their short forms."
     )
 
 
@@ -128,11 +177,11 @@ def kanary(cut: Cut, prompt: KanaryPromptFormatter) -> dict[str, torch.Tensor]:
     optional_slots = {
         "decodercontext": "",
         "emotion": "<|emo:undefined|>",
-        "itn": "<|noitn|>",
+        "itn": "<|itn:undefined|>",
         "timestamp": "<|notimestamp|>",
         "diarize": "<|nodiarize|>",
         "pnc": "<|pnc|>",
-        "foreign": "<|foreign_undefined|>",
+        "foreign": "<|foreign:undefined|>",
     }
     slots = {slot: cut.custom[slot] for slot in expected_slots}
     slots[prompt.PROMPT_LANGUAGE_SLOT] = CANARY_SPECIAL_TOKENIZER

@@ -1,7 +1,7 @@
-base_model: canary-1b-flash
+base_model: canary-1b-v2
 
 defaults:
-  - model: canary-1b-flash
+  - model: canary-1b-v2
   - _self_
 
 
@@ -22,10 +22,10 @@ model:
       target_lang: <|ko|>
       emotion: <|emo:undefined|>
       pnc: <|pnc|>
-      itn: <|noitn|>
+      itn: <|itn:undefined|>
       diarize: <|nodiarize|>
       timestamp: <|notimestamp|>
-      foreign: <|foreign_undefined|>
+      foreign: <|foreign:undefined|>
   - role: user_partial
     slots:
       decodercontext: ''
@@ -52,5 +52,3 @@ kanary_tokenizer:
   custom_tokenizer:
     _target_: nemo.collections.common.tokenizers.canary_tokenizer.CanaryTokenizer
     tokenizers: null
-
-

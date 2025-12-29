@@ -10,7 +10,7 @@ prompt_defaults:
     target_lang: <|en|>
     emotion: <|emo:undefined|>
     pnc: <|pnc|>
-    itn: <|noitn|>
+    itn: <|itn:undefined|>
     diarize: <|nodiarize|>
     timestamp: <|notimestamp|>
 - role: user_partial

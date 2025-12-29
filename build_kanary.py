@@ -15,7 +15,7 @@ def main(cfg):
     aed_model = EncDecMultiTaskModel(cfg=cfg.model)
     aed_model.maybe_init_from_pretrained_checkpoint(cfg)
 
-    model_name="kanary-1b-flash-agg"
+    model_name="kanary-1b-v2-agg"
 
     aed_model.save_to(f"kanary_models/{model_name}.nemo")
 
