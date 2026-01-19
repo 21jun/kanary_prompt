@@ -1,7 +1,7 @@
 
 # Kanary Prompt
 
-Lightweight package that registers the `Kanary` prompt formatter for NeMo/Canary2 pipelines.
+Lightweight package that registers the [`Kanary`](https://huggingface.co/lee1jun/kanay-1b-20260119) prompt formatter for NeMo/Canary2 pipelines.
 
 ## Install from Git
 
