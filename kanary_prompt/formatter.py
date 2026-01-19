@@ -25,7 +25,7 @@ from nemo.collections.common.tokenizers.canary_tokenizer import (
 
 ITN_TRUE = BOOL_TRUE | {"itn", "<|itn|>"}
 ITN_FALSE = BOOL_FALSE | {"noitn", "<|noitn|>"}
-ITN_DEFAULT = {"default", "undefined", "itn:undefined", "<|itn:undefined|>", "<itn:undefined|>"}
+ITN_DEFAULT = {"default", "undefined", "itn:undefined", "<|itn:undefined|>"}
 ITN_SPECIAL_TOKENS = {"<|itn|>", "<|noitn|>", "<|itn:undefined|>"}
 ITN_ALL = ITN_TRUE | ITN_FALSE | ITN_DEFAULT | ITN_SPECIAL_TOKENS
 ITN_TRUE_NORMALIZED = {str(v).lower() for v in ITN_TRUE}
