@@ -2,3 +2,6 @@ models/
 .vscode/
 kanary_models/
 tokenizers/
+
+__pycache__/
+*.pyc
